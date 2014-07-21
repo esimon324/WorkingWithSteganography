@@ -14,6 +14,12 @@
 }
 @property (weak, nonatomic) IBOutlet UIImageView *imgView;
 @property (weak, nonatomic) IBOutlet UIImageView *image2View;
-@property (strong, nonatomic) IBOutlet UILabel *label;
+@property (weak, nonatomic) IBOutlet UITextView *label;
+@property (weak, nonatomic) IBOutlet UITextField *textField;
+
+- (IBAction)encodeImage:(id)sender;
+
+- (IBAction)decodeImage:(id)sender;
+
 @property (strong, nonatomic) Reader *reader;
 @end

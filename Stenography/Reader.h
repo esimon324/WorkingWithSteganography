@@ -10,7 +10,6 @@
 
 @interface Reader : NSObject
 
-@property (strong, nonatomic) UIImage *img;
 @property (nonatomic) NSUInteger messageSize;
 
 -(NSString *)decodeMessage:(UIImage *)img;

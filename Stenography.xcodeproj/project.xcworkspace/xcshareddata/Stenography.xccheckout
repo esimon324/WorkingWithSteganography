@@ -5,36 +5,36 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>19741BA5-509A-4873-A0DD-FF337547D47D</string>
+	<string>346028E1-9466-4B40-A233-B677CFAE8862</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Stenography</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>033F9BFF-3581-40A9-B0C3-7285F65523E1</key>
-		<string>https://github.com/esimon324/steganography.git</string>
+		<key>D8E2470A-5519-414C-A2BB-B779583F4BDF</key>
+		<string>https://github.com/esimon324/WorkingWithSteganography.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Stenography/Stenography.xcodeproj/project.xcworkspace</string>
+	<string>Stenography.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>033F9BFF-3581-40A9-B0C3-7285F65523E1</key>
-		<string>../../..</string>
+		<key>D8E2470A-5519-414C-A2BB-B779583F4BDF</key>
+		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/esimon324/steganography.git</string>
+	<string>https://github.com/esimon324/WorkingWithSteganography.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>033F9BFF-3581-40A9-B0C3-7285F65523E1</string>
+	<string>D8E2470A-5519-414C-A2BB-B779583F4BDF</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>033F9BFF-3581-40A9-B0C3-7285F65523E1</string>
+			<string>D8E2470A-5519-414C-A2BB-B779583F4BDF</string>
 			<key>IDESourceControlWCCName</key>
-			<string>steganography</string>
+			<string>WorkingWithSteganography</string>
 		</dict>
 	</array>
 </dict>

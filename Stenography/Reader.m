@@ -15,6 +15,9 @@
 -(NSString *)decodeMessage:(UIImage *)img
 {
     CGImageRef imageRef = img.CGImage;
+    NSData *picData = UIImagePNGRepresentation(img);
+    img = [[UIImage alloc] initWithData:picData];
+    imageRef = img.CGImage;
     NSUInteger nWidth = CGImageGetWidth(imageRef);
     NSUInteger nHeight = CGImageGetHeight(imageRef);
     NSUInteger nBytesPerRow = CGImageGetBytesPerRow(imageRef);
@@ -34,46 +37,33 @@
     CFBitVectorSetAllBits(codedString, 0);
     
     CFBit currentBit;
-    
-    for (int i = 0; i < [forLengthPurposes length]; i ++)
-    {
-            currentBit = CFBitVectorGetBitAtIndex(dataBits, (((i+1)*8)-1));
-            if(currentBit == 0)
-            {
-            
-                CFBitVectorSetBitAtIndex(codedString, i, currentBit);
-            }
-            if(currentBit == 1)
-            {
-                CFBitVectorSetBitAtIndex(codedString, i, currentBit);
-            }
-    }
-    
     NSMutableData *bitData = [[NSMutableData alloc] init];
-    NSUInteger numBits = CFBitVectorGetCount(codedString);
+    NSUInteger numIterations = [forLengthPurposes length];
     uint8_t nextBytes;
-    NSUInteger iterator = 0;
-    for(int i =0; i < numBits; i++)
+    
+    for (int i = 0; i < numIterations; i ++)
     {
-        CFRange range = CFRangeMake(iterator, 8);
-        CFBitVectorGetBits(codedString, range, &nextBytes);
-        [bitData appendBytes:&nextBytes length:1];
-        iterator = i+8;
-    }
-    
-    UInt8 *bitDataBytes = (UInt8 *)bitData.bytes;
-    NSUInteger lengthOfTextBytes = 0;
-    for(int i = 0; i < [bitData length]; i++){
-        if(bitDataBytes[i] == 3){
-            lengthOfTextBytes ++;
-            break;
+        currentBit = CFBitVectorGetBitAtIndex(dataBits, (((i+1)*8)-1));
+        if(currentBit == 0)
+        {
+            CFBitVectorSetBitAtIndex(codedString, i, currentBit);
         }
-        else{
-            lengthOfTextBytes ++;
+        if(currentBit == 1)
+        {
+            CFBitVectorSetBitAtIndex(codedString, i, currentBit);
+        }
+        if((i+1)%8 == 0)
+        {
+            CFRange range = CFRangeMake((i-7), 8);
+            CFBitVectorGetBits(codedString, range, &nextBytes);
+            if(nextBytes == 3)
+            {
+                break;
+            }
+            [bitData appendBytes:&nextBytes length:1];
+            
         }
     }
-    
-    [bitData setLength:lengthOfTextBytes];
     
     NSData *newData = [NSData dataWithData:bitData];
     NSString *picString = [[NSString alloc] initWithData:newData encoding:NSUTF8StringEncoding];
@@ -83,13 +73,20 @@
 
 -(UIImage *)encodeMessage:(UIImage *)img :(NSString *)message
 {
+    //get bits from input message
+    
     NSData *stringData = [message dataUsingEncoding:NSUTF8StringEncoding];
     UInt8 *stringBits = (UInt8 *)stringData.bytes;
     
     CFBitVectorRef stringRealBits = CFBitVectorCreate(NULL, stringBits, [stringData length]*8);
     
     
+    //grabs image input in function
     CGImageRef imageRef = img.CGImage;
+    img = [[UIImage alloc] initWithCGImage:imageRef];
+    NSData *picData = UIImagePNGRepresentation(img);
+    img = [[UIImage alloc] initWithData:picData];
+    imageRef = img.CGImage;
     NSUInteger nWidth = CGImageGetWidth(imageRef);
     NSUInteger nHeight = CGImageGetHeight(imageRef);
     NSUInteger nBytesPerRow = CGImageGetBytesPerRow(imageRef);
@@ -99,10 +96,15 @@
     CGColorSpaceRelease(colorSpace);
     CGContextDrawImage(bmContext, (CGRect){.origin.x = 0.0f, .origin.y = 0.0f, .size.width = nWidth, .size.height = nHeight}, imageRef);
     
+    //gets bytes from image
     UInt8* data = (UInt8*)CGBitmapContextGetData(bmContext);
+    CFBitVectorRef dataBits = CFBitVectorCreate(NULL, data, nBytesPerRow*nHeight*8);
     CFBit currentBit;
+    
     _messageSize = CFBitVectorGetCount(stringRealBits);
-    for (NSUInteger i = 0; i < _messageSize ; i ++)
+    NSUInteger endOfString = _messageSize;
+    //encodes message into picture
+    for (NSUInteger i = 0; i <= _messageSize ; i ++)
     {
         currentBit = CFBitVectorGetBitAtIndex(stringRealBits, i);
         if(data[i]%2 < currentBit)
@@ -113,31 +115,38 @@
         {
             data[i]--;
         }
-        if(i == _messageSize - 1)
-        {
-            for(NSUInteger j = 1; j < 9; j++)
-            {
-                if(j < 7)
-                {
-                    if(data[i+j]%2 == 1){
-                        data[i+j] --;
-                    }
-                }
-                else{
-                    if(data[i+j]%2 == 0){
-                        data[i+j] ++;
-                    }
-                }
-            }
-        }
         
+        //adds end of line character to message
         
+        dataBits = CFBitVectorCreate(NULL, data, nBytesPerRow*nHeight*8);
     }
     
+    for(NSUInteger j = endOfString+1; j < endOfString+9; j++)
+    {
+        if(j < endOfString+6)
+        {
+            if(data[j]%2 == 1)
+            {
+                data[j] --;
+            }
+        }
+        else
+        {
+            if(data[j]%2 == 0)
+            {
+                data[j] ++;
+            }
+        }
+        dataBits = CFBitVectorCreate(NULL, data, nBytesPerRow*nHeight*8);
+    }
+    
+    //draws new image from data, returns said image
     bmContext = CGBitmapContextCreate(data, img.size.width, img.size.height, 8,nBytesPerRow, colorSpace, kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedFirst);
     
     CGImageRef newImageRef = CGBitmapContextCreateImage(bmContext);
     UIImage *imageNew = [[UIImage alloc] initWithCGImage:newImageRef];
+    picData = UIImagePNGRepresentation(imageNew);
+    imageNew = [[UIImage alloc] initWithData:picData];
     CGContextRelease(bmContext);
     return imageNew;
 }

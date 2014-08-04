@@ -34,7 +34,7 @@
     CFBitVectorSetAllBits(bitStream, 0);
     
     NSMutableData *decodedDataMut = [[NSMutableData alloc] init];
-    uint8_t currentByte;
+    uint8_t currentByte = '\0';
     CFBit currentBit;
     NSUInteger i = 0;
     BOOL startDecoding = NO;
